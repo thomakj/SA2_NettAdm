@@ -1,12 +1,7 @@
 package asTwo;
 
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.Calendar;
 
 public class ExecuteSnmp {
 	
@@ -43,7 +38,7 @@ public class ExecuteSnmp {
 			
 			while ((s = stdInput.readLine()) != null) {
 				System.out.println(s);
-				writeToFile("Current time: " + Calendar.getInstance().getTime()  + " " + s + "\n");
+//				writeToFile("Current time: " + Calendar.getInstance().getTime()  + " " + s + "\n");
 				}		
 			System.out.println("");
 			}
@@ -53,28 +48,4 @@ public class ExecuteSnmp {
 		
 	}
 	
-	public void writeToFile(String data) throws IOException{
-    	
-    	FileWriter fstream = null;
-    	try{
-    		fstream = new FileWriter("C:\\Users\\Ole\\Documents\\Skole\\Programvarearkitektur\\snmpData.txt", true);
-    		BufferedWriter out = new BufferedWriter(fstream);
-    		out.write(data);
-    		out.close();
-    		}
-    	catch (Exception e) {
-			// TODO: handle exception
-		}
-    	finally{
-    		fstream.close();
-    	}
-    
-    }
-
-
-	
-//	public static void main(String args[]) throws InterruptedException {
-//		
-//	}
-		
 }
