@@ -1,3 +1,5 @@
+package asTwo;
+
 
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.ontology.OntModelSpec;
@@ -69,6 +71,4 @@ public class Jena {
 
 		return infmodel;
 	}
-
-	
 }

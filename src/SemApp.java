@@ -1,13 +1,18 @@
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.util.Iterator;
-
-import javax.xml.namespace.QName;
 import javax.xml.soap.*;
 
 public class SemApp {
 
-	private static SOAPBody sendSoapMessage(String endpoint, String args0, String args1) throws SOAPException{
+	private SOAPBody sendSoapMessage(String endpoint, String args0, String args1) throws SOAPException{
+		/*
+		 * Generates a SOAP message and sends it to endpoint.
+		 * Returns the answer provided by the endpoint. 
+		 * 
+		 * @param endpoint	location to where the message should be sent.
+		 * @param args0		argument to be added in the message.
+		 * @param args1		argument to be added in the message.
+		 * @return 			SOAPBody
+		 */
 		SOAPFactory soapFactory =  SOAPFactory.newInstance();
 		SOAPMessage message = MessageFactory.newInstance().createMessage();
 		SOAPHeader header = message.getSOAPHeader();
@@ -15,7 +20,6 @@ public class SemApp {
 		header.detachNode();
 		
 		if(args0 != null && args1 != null){
-
 			Name bodyName = soapFactory.createName(
 					"sendValueResponse", "ns",
 					"http://managementserver.com");
@@ -43,7 +47,13 @@ public class SemApp {
 		return responseBody;
 	}
 	
-	private static Iterator<SOAPElement> getObjectWithRequestId()throws SOAPException{
+	@SuppressWarnings("unchecked")
+	private Iterator<SOAPElement> getObjectWithRequestId()throws SOAPException{
+		/*
+		 * Gets the CNMP-object from the webservice with attached requestid.
+		 * 
+		 *  @returns Iterator<SOAPElement>
+		 */
 		String endpoint = "http://ttm4128.item.ntnu.no:8080/axis2/services/ManagementServer/getObject";
 		SOAPBody responseBody = sendSoapMessage(endpoint,null,null);
 		if(responseBody.getFault()!=null){
@@ -52,13 +62,21 @@ public class SemApp {
 		}
 		SOAPBodyElement responseElement = (SOAPBodyElement)responseBody.getChildElements().next();
 		return responseElement.getChildElements();
-		
 	}
 	
-	private static String SendValue(String reqId,String value) throws SOAPException{
+	private String SendValue(String reqId,String value) throws SOAPException{
+		/*
+		 * Sends value to the webservice and gets an answer whether the sent value is correct or not.
+		 * Returns the acknowledge message from the webservice.
+		 * 
+		 * @param reqId	id of the transaction.
+		 * @param value	value of the transaction.
+		 * @return 		String
+		 */
 		String endpoint = "http://ttm4128.item.ntnu.no:8080/axis2/services/ManagementServer/sendValue";
 		SOAPBody responseBody1 = sendSoapMessage(endpoint,reqId,value);
 		SOAPBodyElement responseElement1 = (SOAPBodyElement)responseBody1.getChildElements().next();
+		@SuppressWarnings("unchecked")
 		Iterator<SOAPElement> returns1 = responseElement1.getChildElements();
 		if(responseBody1.getFault()!=null){
 			System.out.println(responseBody1.getFault().getFaultString());
@@ -70,8 +88,13 @@ public class SemApp {
 	}
 	
 	public static void main(String[] args) throws SOAPException {
+		/*
+		 * Main function of the TTM4128 - Semester Assignment 2 (2013)
+		 * Read the System.out.println to get a grasp of what each line does.
+		 */
+		SemApp semapp = new SemApp();
 		System.out.println("Asks the server for an objectID and a request ID");
-		Iterator<SOAPElement> returns = getObjectWithRequestId();
+		Iterator<SOAPElement> returns = semapp.getObjectWithRequestId();
 		
 		if(returns != null){
 			SOAPElement cnmpObj = (SOAPElement)returns.next();
@@ -93,26 +116,9 @@ public class SemApp {
 			String value = snmpResult.split("= ")[1];
 			System.out.println("Sending value: <"+value+"> to Server");
 			
-			String ackFromSendValue = SendValue(reqId.getValue(), value);
+			String ackFromSendValue = semapp.SendValue(reqId.getValue(), value);
 			System.out.println("Ack from sendValue: \""+ackFromSendValue+"\"");
 			
 		}
-
-
-
-
-
-
-
-
 	}
-
-	private static String getXmlFromSOAPMessage(SOAPMessage msg) throws SOAPException, IOException {
-		ByteArrayOutputStream byteArrayOS = new ByteArrayOutputStream();
-		msg.writeTo(byteArrayOS);
-		return new String(byteArrayOS.toByteArray());
-	}
-
-
-
 }
